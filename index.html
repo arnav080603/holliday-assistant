@@ -1,0 +1,278 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>H.O.L.L.I.D.A.Y.</title>
+<link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@500;700;900&family=Rajdhani:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+:root{--c:#3df2ff;--c2:#0bb8d6;--dim:#0b3b48;--bg:#02070b;--warn:#ffb13d;--ok:#4dff9a;--txt:#cfefff}
+*{box-sizing:border-box;margin:0;padding:0}
+html,body{height:100%;background:var(--bg);color:var(--txt);font-family:Rajdhani,sans-serif;overflow:hidden}
+body:before{content:"";position:fixed;inset:0;background:radial-gradient(ellipse at center,rgba(20,90,110,.25),transparent 65%),repeating-linear-gradient(0deg,rgba(61,242,255,.03) 0 1px,transparent 1px 4px);pointer-events:none}
+#grid{position:fixed;inset:0;background-image:linear-gradient(rgba(61,242,255,.05) 1px,transparent 1px),linear-gradient(90deg,rgba(61,242,255,.05) 1px,transparent 1px);background-size:48px 48px;mask-image:radial-gradient(circle at center,#000 20%,transparent 75%);pointer-events:none}
+.app{position:relative;display:grid;grid-template-columns:300px 1fr 360px;grid-template-rows:64px 1fr 150px;height:100vh;gap:14px;padding:14px}
+header{grid-column:1/4;display:flex;align-items:center;justify-content:space-between;border-bottom:1px solid var(--dim);padding:0 8px}
+.logo{font-family:Orbitron;font-weight:900;letter-spacing:.5em;font-size:22px;color:var(--c);text-shadow:0 0 14px var(--c)}
+.logo small{display:block;font-family:Rajdhani;letter-spacing:.3em;font-size:11px;color:#6fb9c9;font-weight:500;text-shadow:none}
+#clock{font-family:Orbitron;font-size:26px;color:var(--c);text-align:right}
+#date{font-size:12px;letter-spacing:.25em;color:#6fb9c9;text-align:right}
+.panel{border:1px solid var(--dim);background:linear-gradient(180deg,rgba(8,40,52,.55),rgba(2,10,14,.6));position:relative;padding:14px;overflow:hidden;clip-path:polygon(0 12px,12px 0,100% 0,100% calc(100% - 12px),calc(100% - 12px) 100%,0 100%)}
+.panel h3{font-family:Orbitron;font-size:11px;letter-spacing:.35em;color:var(--c);margin-bottom:10px;display:flex;justify-content:space-between;gap:10px}.panel h3 span{text-align:right;letter-spacing:.15em}
+.panel h3 span{color:#5a96a5}
+.left{display:flex;flex-direction:column;gap:14px;min-height:0}
+.stat{display:flex;justify-content:space-between;font-size:14px;padding:5px 0;border-bottom:1px dashed rgba(61,242,255,.12)}
+.stat b{color:var(--c);font-weight:600}
+.bar{height:4px;background:#072029;margin:4px 0 8px}.bar i{display:block;height:100%;background:linear-gradient(90deg,var(--c2),var(--c));box-shadow:0 0 8px var(--c);transition:width .8s}
+.dot{display:inline-block;width:8px;height:8px;border-radius:50%;background:#555;margin-right:6px}.dot.on{background:var(--ok);box-shadow:0 0 8px var(--ok)}.dot.off{background:#ff4d6d}
+.center{position:relative;display:flex;align-items:center;justify-content:center;min-height:0}
+#core{width:100%;height:100%}
+#state{position:absolute;bottom:6%;font-family:Orbitron;letter-spacing:.5em;font-size:13px;color:var(--c);text-shadow:0 0 10px var(--c)}
+#heard{position:absolute;top:4%;max-width:80%;text-align:center;font-size:20px;color:#9fe9f7;min-height:28px}
+.right{display:flex;flex-direction:column;gap:14px;min-height:0}
+#results{flex:1;overflow:auto;min-height:0}
+#results::-webkit-scrollbar,#log::-webkit-scrollbar{width:4px}#results::-webkit-scrollbar-thumb,#log::-webkit-scrollbar-thumb{background:var(--dim)}
+.card{display:block;text-decoration:none;color:var(--txt);border-left:2px solid var(--c);padding:8px 10px;margin-bottom:9px;background:rgba(61,242,255,.04);animation:in .4s ease both}
+.card:hover{background:rgba(61,242,255,.1)}
+.card .n{font-family:Orbitron;font-size:12px;color:var(--c);letter-spacing:.05em;word-break:break-all}
+.card .d{font-size:13px;color:#a8c9d3;margin:3px 0;line-height:1.25}
+.card .m{font-size:12px;color:var(--warn)}
+@keyframes in{from{opacity:0;transform:translateX(20px)}to{opacity:1;transform:none}}
+.bottom{grid-column:1/4;display:grid;grid-template-columns:1fr 360px;gap:14px;min-height:0}
+#log{overflow:auto;font-size:15px;line-height:1.35;min-height:0;height:100%}
+#log .u{color:#7fb6c4}#log .u:before{content:"YOU › ";color:#4b7d8a;font-family:Orbitron;font-size:10px}
+#log .j{color:var(--txt);margin-bottom:6px}#log .j:before{content:"HOLLIDAY › ";color:var(--c);font-family:Orbitron;font-size:10px}
+.ctrl{display:flex;flex-direction:column;gap:8px}
+.row{display:flex;gap:8px}
+input[type=text]{flex:1;background:#031319;border:1px solid var(--dim);color:var(--txt);font:16px Rajdhani;padding:9px 12px;outline:none}
+input[type=text]:focus{border-color:var(--c)}
+button{background:transparent;border:1px solid var(--c2);color:var(--c);font:600 11px Orbitron;letter-spacing:.15em;padding:9px 12px;cursor:pointer}
+button:hover{background:rgba(61,242,255,.12)}button.act{background:var(--c);color:#002}
+.hint{font-size:12px;color:#5a96a5;line-height:1.4}
+#boot{position:fixed;inset:0;background:var(--bg);display:flex;flex-direction:column;align-items:center;justify-content:center;z-index:9;cursor:pointer}
+#boot h1{font-family:Orbitron;font-weight:900;letter-spacing:.6em;color:var(--c);text-shadow:0 0 24px var(--c);font-size:44px;margin-bottom:12px}
+#boot p{letter-spacing:.4em;color:#6fb9c9;font-size:13px;animation:blink 1.4s infinite}
+#bootlog{font-family:monospace;font-size:12px;color:#3c8c9c;margin-top:30px;height:120px;width:420px;white-space:pre}
+@keyframes blink{50%{opacity:.3}}
+@media(max-width:1000px){.app{grid-template-columns:1fr;grid-template-rows:56px 340px auto auto auto;overflow:auto;height:auto}header,.bottom{grid-column:1}.bottom{grid-template-columns:1fr}html,body{overflow:auto}#log{height:160px}}
+</style>
+</head>
+<body>
+<div id="grid"></div>
+<div id="boot"><h1>H.O.L.L.I.D.A.Y.</h1><p>CLICK ANYWHERE TO INITIALIZE</p><div id="bootlog"></div></div>
+<div class="app">
+  <header>
+    <div class="logo">H.O.L.L.I.D.A.Y.<small>HIGHLY ORGANIZED LANGUAGE &amp; LOGIC INTELLIGENCE, DESIGNED AS YOURS</small></div>
+    <div><div id="clock">--:--:--</div><div id="date"></div></div>
+  </header>
+  <div class="left">
+    <div class="panel"><h3>SYSTEMS <span>MK-VII</span></h3>
+      <div class="stat"><span><i class="dot" id="dBrain"></i>Neural core</span><b id="sBrain">—</b></div>
+      <div class="stat"><span><i class="dot" id="dVoice"></i>Voice synth</span><b id="sVoice">—</b></div>
+      <div class="stat"><span><i class="dot" id="dMic"></i>Audio input</span><b id="sMic">—</b></div>
+      <div class="stat"><span><i class="dot" id="dNet"></i>GitHub uplink</span><b id="sNet">—</b></div>
+    </div>
+    <div class="panel"><h3>DIAGNOSTICS <span>LIVE</span></h3>
+      <div class="stat"><span>CPU cores</span><b id="sCpu">—</b></div><div class="bar"><i id="bCpu" style="width:30%"></i></div>
+      <div class="stat"><span>Power</span><b id="sBat">—</b></div><div class="bar"><i id="bBat" style="width:0"></i></div>
+      <div class="stat"><span>Network latency</span><b id="sLat">—</b></div><div class="bar"><i id="bLat" style="width:0"></i></div>
+      <div class="stat"><span>Queries handled</span><b id="sQ">0</b></div>
+    </div>
+    <div class="panel" style="flex:1"><h3>ENVIRONMENT <span id="sLoc">—</span></h3>
+      <div style="font-family:Orbitron;font-size:34px;color:var(--c)" id="sTemp">--°</div>
+      <div id="sWx" style="color:#a8c9d3">Acquiring...</div>
+    </div>
+  </div>
+  <div class="center panel" style="padding:0">
+    <div id="heard"></div>
+    <canvas id="core"></canvas>
+    <div id="state">STANDBY</div>
+  </div>
+  <div class="right">
+    <div class="panel" style="flex:1;display:flex;flex-direction:column;min-height:0"><h3 id="rTitle">INTEL FEED <span>GITHUB</span></h3><div id="results"></div></div>
+  </div>
+  <div class="bottom">
+    <div class="panel"><h3>COMMS LOG <span id="sModel">—</span></h3><div id="log"></div></div>
+    <div class="panel ctrl">
+      <div class="row"><input id="txt" type="text" placeholder="Type a command, sir..." autocomplete="off"><button id="send">SEND</button></div>
+      <div class="row"><button id="mic" style="flex:1">● HOLD SPACE / CLICK TO TALK</button><button id="wake" title="Always listen for 'Holliday'">WAKE: OFF</button><button id="mute">🔊</button></div>
+      <div class="hint">Try: “search GitHub for voice assistants” · “show me the JARVIS research” · “what's trending on GitHub” · “who is Tony Stark” · “weather” · “system status” · “open YouTube”</div>
+    </div>
+  </div>
+</div>
+<script>
+// ══════════ CONFIG ══════════
+const OLLAMA='http://localhost:11434', MODELS=['llama3.2:1b','llama3.2'];let MODEL='llama3.2';const TTS='http://localhost:8880', VOICE='bf_emma';
+const $=id=>document.getElementById(id);
+const S={state:'idle',level:0,ttsOK:false,brainOK:false,muted:location.search.includes('mute'),wake:false,hist:[],q:0,busy:false,loc:null,wx:null};
+
+// Playwright-sourced research: top JARVIS projects on GitHub (scraped 2026-10-11, sorted by stars)
+const RESEARCH=[
+ {name:'isair/jarvis',stars:'2k',desc:'100% private, offline AI voice assistant. Talk naturally as if Jarvis is a third person in the room; it remembers everything.'},
+ {name:'ethanplusai/jarvis',stars:'857',desc:'A voice assistant for Claude Code — talk to your Mac, it brainstorms and builds projects and tells you out loud when a session needs you.'},
+ {name:'Gladiator07/JARVIS',stars:'668',desc:'Personal voice assistant in Python with a cool-looking GUI.'},
+ {name:'akshayaggarwal99/jarvis-ai-assistant',stars:'649',desc:'Jarvis AI Assistant.'},
+ {name:'gia-guar/JARVIS-ChatGPT',stars:'463',desc:'Conversational assistant with synthetic voices including J.A.R.V.I.S.\'s — OpenAI, IBM Watson and Tacotron voice generation.'},
+ {name:'Dipeshpal/Jarvis_AI',stars:'410',desc:'Python module providing base functionality for any assistant: chatbot, tasks, built with TensorFlow and PyTorch.'},
+ {name:'llm-guy/jarvis',stars:'336',desc:'Wake-word voice assistant powered by a local LLM (Qwen via Ollama) and LangChain.'},
+ {name:'eadmin2/jarvis_ai',stars:'187',desc:'Iron-Man-style voice assistant with a holographic HUD — local Whisper speech-to-text, ElevenLabs voice.'},
+ {name:'projectswithdigambar/jarvis',stars:'163',desc:'Desktop assistant in Python + Eel + HTML/JS — control your computer and phone by voice and text.'},
+ {name:'vinayak-hariharno/Jarvis-Mark-XI-AR-Hud',stars:'7',desc:'Futuristic web AR HUD with real-time hand tracking and gesture control of 3D objects.'}
+];
+
+// ══════════ BOOT ══════════
+$('boot').onclick=async()=>{
+  $('boot').onclick=null;$('boot').querySelector('p').textContent='INITIALIZING';
+  const lines=['> loading neural core ........','> calibrating voice matrix ....','> establishing GitHub uplink ..','> syncing environment sensors .','> all systems nominal.'];
+  for(const l of lines){$('bootlog').textContent+=l+'\n';await sleep(260)}
+  unlockAudio();
+  const [b,t]=await Promise.all([checkBrain(),checkTTS()]);checkNet();initDiag();initWeather();initMic();
+  $('boot').style.transition='opacity .6s';$('boot').style.opacity=0;setTimeout(()=>$('boot').remove(),600);
+  showResearch(false);if(S.muted)$('mute').textContent='🔇';
+  const h=new Date().getHours(),g=h<4?'Good evening':h<12?'Good morning':h<18?'Good afternoon':'Good evening';
+  say(`${g}, sir. Holliday online. All systems are operational${b?'':', though my neural core is offline, so I am running on reflexes'}. How may I assist you?`);
+};
+const sleep=ms=>new Promise(r=>setTimeout(r,ms));
+
+// ══════════ STATUS CHECKS ══════════
+function setStat(k,ok,txt){$('d'+k).className='dot '+(ok?'on':'off');$('s'+k).textContent=txt}
+async function checkBrain(){try{const r=await fetch(OLLAMA+'/api/tags',{signal:AbortSignal.timeout(3000)});const j=await r.json();const have=MODELS.find(x=>j.models.some(m=>m.name===x||m.name===x+':latest'));S.brainOK=!!have;if(have)MODEL=have;setStat('Brain',S.brainOK,S.brainOK?'ONLINE':'NO MODEL');$('sModel').textContent=S.brainOK?MODEL.toUpperCase()+' · LOCAL':'REFLEX MODE';
+  if(S.brainOK)fetch(OLLAMA+'/api/generate',{method:'POST',body:JSON.stringify({model:MODEL,prompt:'',keep_alive:-1})}).catch(()=>{});}catch(e){S.brainOK=false;setStat('Brain',false,'OFFLINE');$('sModel').textContent='REFLEX MODE'}return S.brainOK}
+// Neural voice (Kokoro, same as ECHO); the built-in voice is only a fallback if the server is down.
+async function checkTTS(){try{const r=await fetch(TTS+'/health',{signal:AbortSignal.timeout(3000)});S.ttsOK=r.ok;fetch(`${TTS}/tts?voice=${VOICE}&text=Online.`).catch(()=>{})}catch(e){S.ttsOK=false}setStat('Voice',true,S.ttsOK?'NEURAL':'SYSTEM');return S.ttsOK}
+async function checkNet(){const t=performance.now();try{await fetch('https://api.github.com/zen',{cache:'no-store'});const ms=Math.round(performance.now()-t);setStat('Net',true,'LINKED');$('sLat').textContent=ms+' ms';$('bLat').style.width=Math.max(8,100-ms/8)+'%'}catch(e){setStat('Net',false,'DOWN')}}
+async function initDiag(){$('sCpu').textContent=(navigator.hardwareConcurrency||8)+' cores';
+  setInterval(()=>{$('bCpu').style.width=(20+Math.random()*25+(S.state!=='idle'?35:0))+'%'},1200);
+  try{const b=await navigator.getBattery();const u=()=>{$('sBat').textContent=Math.round(b.level*100)+'%'+(b.charging?' ⚡':'');$('bBat').style.width=b.level*100+'%'};u();b.onlevelchange=u;b.onchargingchange=u}catch(e){$('sBat').textContent='AC'; $('bBat').style.width='100%'}
+  setInterval(checkNet,30000)}
+const WX={0:'Clear skies',1:'Mainly clear',2:'Partly cloudy',3:'Overcast',45:'Fog',48:'Freezing fog',51:'Light drizzle',53:'Drizzle',55:'Heavy drizzle',61:'Light rain',63:'Rain',65:'Heavy rain',71:'Light snow',73:'Snow',75:'Heavy snow',80:'Rain showers',81:'Rain showers',82:'Violent showers',95:'Thunderstorms',96:'Thunderstorms with hail',99:'Severe thunderstorms'};
+async function initWeather(){try{let loc;try{const c=(await new Promise((ok,no)=>navigator.geolocation.getCurrentPosition(ok,no,{timeout:8000,maximumAge:36e5}))).coords;loc={lat:c.latitude,lon:c.longitude,city:'Local'};try{const g=await (await fetch(`https://api.bigdatacloud.net/data/reverse-geocode-client?latitude=${c.latitude}&longitude=${c.longitude}&localityLanguage=en`)).json();loc.city=g.city||g.locality||'Local'}catch(e){}}catch(e){loc={lat:40.71,lon:-74.0,city:'New York'}}S.loc=loc;
+  const w=await (await fetch(`https://api.open-meteo.com/v1/forecast?latitude=${loc.lat}&longitude=${loc.lon}&current=temperature_2m,weather_code,wind_speed_10m,relative_humidity_2m&daily=temperature_2m_max,temperature_2m_min&temperature_unit=fahrenheit&wind_speed_unit=mph&timezone=auto`)).json();
+  S.wx={t:Math.round(w.current.temperature_2m),c:WX[w.current.weather_code]||'Unsettled',wind:Math.round(w.current.wind_speed_10m),hum:w.current.relative_humidity_2m,hi:Math.round(w.daily.temperature_2m_max[0]),lo:Math.round(w.daily.temperature_2m_min[0])};
+  $('sLoc').textContent=loc.city.toUpperCase();$('sTemp').textContent=S.wx.t+'°F';$('sWx').innerHTML=`${S.wx.c}<br>Wind ${S.wx.wind} mph · Humidity ${S.wx.hum}%<br>High ${S.wx.hi}° / Low ${S.wx.lo}°`}catch(e){$('sWx').textContent='Sensors unavailable'}}
+
+// ══════════ CLOCK ══════════
+setInterval(()=>{const d=new Date();$('clock').textContent=d.toLocaleTimeString([], {hour12:false});$('date').textContent=d.toLocaleDateString([], {weekday:'long',month:'long',day:'numeric',year:'numeric'}).toUpperCase()},1000);
+
+// ══════════ VOICE OUT ══════════
+// Sentences are synthesized ahead while earlier ones play, so long replies don't stall.
+let ac,analyser,qFetch=[],playing=false,curAudio=null,sysVoice=null;
+function unlockAudio(){ac=new (window.AudioContext||window.webkitAudioContext)();analyser=ac.createAnalyser();analyser.fftSize=256;analyser.connect(ac.destination);
+  const pick=()=>{const v=speechSynthesis.getVoices();sysVoice=v.find(x=>/Daniel/.test(x.name))||v.find(x=>x.lang==='en-GB')||v.find(x=>x.lang.startsWith('en'))};pick();speechSynthesis.onvoiceschanged=pick}
+function speak(text){text=text.replace(/[*#_`>]/g,'').replace(/[\u{1F000}-\u{1FFFF}\u{2600}-\u{27BF}\u{FE0F}]/gu,'').trim();if(!text||S.muted)return;
+  for(const s of splitSentences(text)){const item={text:s};if(S.ttsOK)item.p=fetch(`${TTS}/tts?voice=${VOICE}&text=${encodeURIComponent(s)}`,{signal:AbortSignal.timeout(20000)}).then(r=>{if(!r.ok)throw 0;return r.blob()}).catch(()=>{S.ttsOK=false;setStat('Voice',true,'SYSTEM');return null});qFetch.push(item)}
+  if(!playing)playNext()}
+function splitSentences(t){return (t.match(/[^.!?]+[.!?]+["')\]]*|[^.!?]+$/g)||[t]).map(s=>s.trim()).filter(Boolean).reduce((a,s)=>{if(a.length&&a[a.length-1].length<40)a[a.length-1]+=' '+s;else a.push(s);return a},[])}
+async function playNext(){const it=qFetch.shift();if(!it){playing=false;if(S.state==='speaking')setState('idle');return}
+  playing=true;setState('speaking');const blob=it.p&&S.ttsOK?await it.p:null;
+  if(blob){const a=new Audio(URL.createObjectURL(blob));curAudio=a;try{const src=ac.createMediaElementSource(a);src.connect(analyser)}catch(e){}a.onended=a.onerror=()=>{curAudio=null;playNext()};a.play().catch(()=>playNext())}
+  else{const u=new SpeechSynthesisUtterance(it.text);if(sysVoice)u.voice=sysVoice;u.rate=1.02;u.pitch=.9;u.onend=u.onerror=()=>playNext();speechSynthesis.speak(u)}}
+function shutUp(){qFetch=[];if(curAudio){curAudio.pause();curAudio=null}speechSynthesis.cancel();playing=false}
+$('mute').onclick=()=>{S.muted=!S.muted;$('mute').textContent=S.muted?'🔇':'🔊';if(S.muted)shutUp()};
+
+// ══════════ VOICE IN ══════════
+const SR=window.SpeechRecognition||window.webkitSpeechRecognition;let rec=null,ptt=false;
+function initMic(){if(!SR){setStat('Mic',false,'TYPE ONLY');$('mic').disabled=true;$('wake').disabled=true;return}
+  setStat('Mic',true,'READY');rec=new SR();rec.lang='en-US';rec.interimResults=true;rec.continuous=false;
+  rec.onresult=e=>{if(S.wake&&!ptt&&playing)return;let fin='',inter='';for(const r of e.results){if(r.isFinal)fin+=r[0].transcript;else inter+=r[0].transcript}$('heard').textContent=fin||inter;
+    if(fin){let q=fin.trim();if(S.wake&&!ptt){const m=q.match(/\b(?:holl?iday|holly day)\b[,.!]?\s*(.*)/i);if(!m)return;q=m[1]||'';if(!q){say('Yes, sir?');return}}handle(q)}};
+  rec.onerror=e=>{if(e.error==='not-allowed'){setStat('Mic',false,'BLOCKED');S.wake=false;$('wake').textContent='WAKE: OFF'}};
+  rec.onend=()=>{$('mic').classList.remove('act');ptt=false;if(S.state==='listening')setState('idle');if(S.wake)setTimeout(()=>{if(S.wake&&!ptt)try{rec.start()}catch(e){}},250)}}
+function listen(){if(!rec)return;shutUp();ptt=true;try{rec.abort()}catch(e){}setTimeout(()=>{try{rec.start();setState('listening');$('mic').classList.add('act');$('heard').textContent='Listening...'}catch(e){}},120)}
+$('mic').onclick=listen;
+document.addEventListener('keydown',e=>{if(e.code==='Space'&&document.activeElement!==$('txt')&&!e.repeat){e.preventDefault();listen()}if(e.key==='Escape'){shutUp();setState('idle')}});
+$('wake').onclick=()=>{S.wake=!S.wake;$('wake').textContent='WAKE: '+(S.wake?'ON':'OFF');$('wake').classList.toggle('act',S.wake);if(S.wake){try{rec.start()}catch(e){}say('Wake word armed. Just say Holliday, sir.')}else try{rec.abort()}catch(e){}};
+$('send').onclick=()=>{const v=$('txt').value.trim();if(v){$('txt').value='';handle(v)}};
+$('txt').onkeydown=e=>{if(e.key==='Enter')$('send').onclick()};
+
+// ══════════ LOG / STATE ══════════
+function setState(s){S.state=s;$('state').textContent={idle:'STANDBY',listening:'LISTENING',thinking:'PROCESSING',speaking:'SPEAKING'}[s]}
+function log(cls,t){const d=document.createElement('div');d.className=cls;d.textContent=t;$('log').appendChild(d);$('log').scrollTop=1e9;return d}
+function say(t){log('j',t);speak(t);S.hist.push({role:'assistant',content:t})}
+const esc=s=>String(s??'').replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
+function cards(title,items){$('rTitle').innerHTML=title;$('results').innerHTML=items.map((r,i)=>`<a class="card" target="_blank" href="${esc(r.url)}" style="animation-delay:${i*60}ms"><div class="n">${esc(r.name)}</div><div class="d">${esc(r.desc||'No description.')}</div><div class="m">${esc(r.meta||'')}</div></a>`).join('')}
+const fmtK=n=>n>=1000?(n/1000).toFixed(n>=10000?0:1)+'k':String(n);
+
+// ══════════ SKILLS ══════════
+function showResearch(talk=true){cards('JARVIS RESEARCH <span>PLAYWRIGHT · GITHUB</span>',RESEARCH.map(r=>({name:r.name,desc:r.desc,url:'https://github.com/'+r.name,meta:'★ '+r.stars})));
+  if(talk)say(`I scanned GitHub for JARVIS projects, sir. The leader is ${spoken(RESEARCH[0].name)} with ${RESEARCH[0].stars} stars: ${RESEARCH[0].desc} Second is ${spoken(RESEARCH[1].name)}, ${RESEARCH[1].desc} And notably, ${spoken(RESEARCH[6].name)} runs on a local model through Ollama, much like me. Ten projects are on your screen.`)}
+const spoken=n=>n.split('/')[1].replace(/[-_]/g,' ')+' by '+n.split('/')[0].replace(/[-_]/g,' ');
+async function ghSearch(q,trending){
+  let url;if(trending){const d=new Date(Date.now()-7*864e5).toISOString().slice(0,10);url=`https://api.github.com/search/repositories?q=created:>${d}${q?'+'+encodeURIComponent(q):''}&sort=stars&order=desc&per_page=10`}
+  else url=`https://api.github.com/search/repositories?q=${encodeURIComponent(q)}&sort=stars&order=desc&per_page=10`;
+  const r=await fetch(url,{headers:{Accept:'application/vnd.github+json'}});if(r.status===403)throw new Error('rate');const j=await r.json();
+  const items=j.items||[];cards((trending?'TRENDING THIS WEEK':'GITHUB: '+esc(q.toUpperCase()))+' <span>'+fmtK(j.total_count||0)+' REPOS</span>',items.map(x=>({name:x.full_name,desc:x.description,url:x.html_url,meta:`★ ${fmtK(x.stargazers_count)} · ${x.language||'—'} · updated ${new Date(x.pushed_at).toLocaleDateString()}`})));
+  if(!items.length)return say(`I found nothing on GitHub for ${q}, sir.`);
+  const t=items.slice(0,3);
+  say(`${trending?'Trending on GitHub this week':`I found ${fmtK(j.total_count)} repositories for ${q}`}, sir. Top result: ${spoken(t[0].full_name)}, with ${fmtK(t[0].stargazers_count)} stars. ${t[0].description?t[0].description.slice(0,140)+'.':''} Followed by ${spoken(t[1]?.full_name||t[0].full_name)}${t[2]?' and '+spoken(t[2].full_name):''}. The full list is on screen.`)}
+async function wiki(topic){const r=await fetch('https://en.wikipedia.org/api/rest_v1/page/summary/'+encodeURIComponent(topic.replace(/\s+/g,'_')));if(!r.ok)return false;const j=await r.json();if(j.type==='disambiguation'||!j.extract)return false;
+  cards('ARCHIVE: '+esc(j.title.toUpperCase())+' <span>WIKIPEDIA</span>',[{name:j.title,desc:j.extract,url:j.content_urls?.desktop?.page,meta:j.description||''}]);
+  say(j.extract.split(/(?<=\.)\s/).slice(0,2).join(' '));return true}
+const SITES={youtube:'https://youtube.com',google:'https://google.com',github:'https://github.com',gmail:'https://mail.google.com',spotify:'https://open.spotify.com',netflix:'https://netflix.com',reddit:'https://reddit.com',twitter:'https://x.com',maps:'https://maps.google.com',schoology:'https://app.schoology.com',chatgpt:'https://chatgpt.com',claude:'https://claude.ai'};
+
+// ══════════ ROUTER ══════════
+// Deterministic skills run first (fast, reliable for demos); everything else goes to the LLM.
+async function handle(raw){
+  const q=raw.trim();if(!q)return;shutUp();log('u',q);$('heard').textContent='“'+q+'”';S.hist.push({role:'user',content:q});$('sQ').textContent=++S.q;
+  const l=q.toLowerCase().replace(/[?.!]+$/,'');let m;setState('thinking');
+  try{
+    if(/^(stop|quiet|shut up|cancel|never ?mind)/.test(l)){setState('idle');return say('Of course, sir.')}
+    if(/(research|jarvis (projects|repos)|projects like (you|yourself)|other jarvis|similar (projects|assistants))/.test(l))return showResearch();
+    if((m=l.match(/(?:what'?s|what is|show( me)?)?\s*trending(?: on github)?(?: in| for)?\s*(.*)/))&&/trending/.test(l))return await ghSearch((m[2]||'').replace(/^(on )?github\s*/,'').trim(),true);
+    if((m=l.match(/(?:search|find|look up|look for|show me)\s+(?:on\s+)?github\s+(?:for\s+)?(.+)/))||(m=l.match(/(?:search|find|look up|look for|show me)\s+(.+?)\s+(?:on|in)\s+github/))||(m=l.match(/^github\s+(.+)/)))return await ghSearch(m[1].replace(/^(for|about)\s+/,'').replace(/\b(repos?|repositories|projects)\b/g,'').trim()||'jarvis');
+    if(/\b(time)\b/.test(l)&&/what|tell|current/.test(l))return say(`It is ${new Date().toLocaleTimeString([], {hour:'numeric',minute:'2-digit'})}, sir.`);
+    if(/\b(date|day is it|today'?s date)\b/.test(l))return say(`Today is ${new Date().toLocaleDateString([], {weekday:'long',month:'long',day:'numeric'})}, sir.`);
+    if(/weather|temperature|forecast|outside|rain|cold|hot/.test(l)&&S.wx)return say(`Currently ${S.wx.t} degrees and ${S.wx.c.toLowerCase()} in ${S.loc.city}, sir. Today's high is ${S.wx.hi}, low of ${S.wx.lo}, with winds at ${S.wx.wind} miles per hour.${S.wx.t<50?' I would recommend a jacket.':''}`);
+    if(/system status|diagnostic|status report|how are you doing|systems/.test(l))return say(`All systems nominal, sir. Neural core is ${S.brainOK?'online, running '+MODEL+' locally':'offline'}. Voice synthesis is ${S.ttsOK?'neural':'on system fallback'}. GitHub uplink is ${$('sNet').textContent.toLowerCase()} at ${$('sLat').textContent}. Power at ${$('sBat').textContent.replace(' ⚡',', charging')}. ${S.q} queries handled this session.`);
+    if((m=l.match(/^(?:open|launch|go to|pull up)\s+(.+)/))){const k=m[1].replace(/\s+/g,'').replace(/\.com$/,'');const u=SITES[k]||(/\./.test(m[1])?'https://'+m[1].replace(/\s+/g,''):null);if(u){window.open(u,'_blank');return say(`Opening ${m[1]}, sir.`)}}
+    if((m=l.match(/^(?:who is|who was|who are|what is an?|what is the|what is|what are|tell me about)\s+(.+)/))&&!/\b(you|your|my|time|weather|today)\b/.test(m[1])&&m[1].split(' ').length<=5){if(await wiki(m[1].replace(/^(a|an|the)\s+/,'')))return}
+    if(/^(hi|hello|hey|yo|good (morning|afternoon|evening))\b/.test(l)&&l.split(' ').length<4)return say(['At your service, sir.','Hello, sir. What are we working on today?','Good to hear from you, sir.'][Math.random()*3|0]);
+    if(/(who are you|what are you|your name|introduce yourself|what can you do)/.test(l))return say("I am Holliday: Highly Organized Language and Logic Intelligence, Designed As Yours. I run entirely on this machine: a local neural core for conversation, a neural voice, and live uplinks to GitHub, Wikipedia and the weather. I can search GitHub, show trending repositories, brief you on JARVIS projects I researched, look things up, open websites, and hold a conversation. Try me, sir.");
+    if(/\b(thank|thanks|cheers)\b/.test(l)&&l.split(' ').length<6)return say(['Always a pleasure, sir.','Happy to help, sir.','For you, sir, always.'][Math.random()*3|0]);
+    if(/flip a coin|coin flip/.test(l))return say(`It's ${Math.random()<.5?'heads':'tails'}, sir.`);
+    if(/roll (a|the) (die|dice)/.test(l))return say(`You rolled a ${1+Math.random()*6|0}, sir.`);
+    if(/\bjoke\b/.test(l)&&!S.brainOK)return say(['I would tell you a UDP joke, sir, but you might not get it.','There are ten kinds of people, sir: those who understand binary and those who do not.','I asked the Mark Forty-Two for a joke, sir. It came apart halfway through.'][Math.random()*3|0]);
+    await chat(q)
+  }catch(e){console.error(e);say(e.message==='rate'?'GitHub is rate-limiting me, sir. Give it a minute.':'I encountered a malfunction there, sir. Shall we try again?')}
+  finally{if(S.state==='thinking')setState(playing?'speaking':'idle')}
+}
+
+// ══════════ BRAIN (Ollama, streamed sentence-by-sentence into TTS) ══════════
+const SYS=`You are H.O.L.L.I.D.A.Y. (Holliday), Arnav's personal AI assistant, in the style of Iron Man's JARVIS and FRIDAY. Speak calmly with dry British wit, address the user as "sir". Replies are SPOKEN ALOUD, so keep them to 1-3 short sentences, no lists, no markdown, no emojis. Today is ${new Date().toDateString()}. If you do not know something factual, say so briefly rather than inventing it. You can search GitHub, show trending repos, look things up on Wikipedia, give weather, and open websites — suggest those commands when relevant.`;
+async function chat(q){
+  if(!S.brainOK){await checkBrain();if(!S.brainOK)return say("My neural core is offline, sir, but I can still search GitHub, check the weather, look things up, or open websites for you.")}
+  const msgs=[{role:'system',content:SYS},...S.hist.slice(-10)];
+  // Low-memory Macs can stall loading the model; give up after 30s without a token and fall back.
+  const ctl=new AbortController();let tm=setTimeout(()=>ctl.abort(),30000);let r;
+  try{r=await fetch(OLLAMA+'/api/chat',{signal:ctl.signal,method:'POST',body:JSON.stringify({model:MODEL,messages:msgs,stream:true,keep_alive:-1,options:{temperature:.7,num_predict:160}})});}catch(e){return say("My neural core is running slow on this machine's memory, sir. I can still search GitHub, check the weather, or look things up instantly.")}
+  const rd=r.body.getReader(),dec=new TextDecoder();let buf='',full='',pend='',el=null;
+  try{for(;;){const {done,value}=await rd.read();if(done)break;clearTimeout(tm);if(!el)el=log('j','');buf+=dec.decode(value,{stream:true});const ls=buf.split('\n');buf=ls.pop();
+    for(const ln of ls){if(!ln.trim())continue;const t=JSON.parse(ln).message?.content||'';full+=t;pend+=t;el.textContent=full;$('log').scrollTop=1e9;
+      const m=pend.match(/^([\s\S]*?[.!?])(\s+)([\s\S]*)$/);if(m&&m[1].length>25){speak(m[1]);pend=m[3]}}}}catch(e){if(!full)return say("My neural core timed out, sir. Try asking me to search GitHub or look something up instead.")}
+  if(pend.trim())speak(pend);S.hist.push({role:'assistant',content:full})}
+
+// ══════════ ARC REACTOR HUD ══════════
+const cv=$('core'),cx=cv.getContext('2d');let W,H,fd=new Uint8Array(128),lv=0;
+function rs(){const r=cv.getBoundingClientRect(),d=devicePixelRatio||1;W=r.width;H=r.height;cv.width=W*d;cv.height=H*d;cx.setTransform(d,0,0,d,0,0)}addEventListener('resize',rs);rs();
+function arc(r,a0,a1,w,col,blur){cx.beginPath();cx.arc(0,0,r,a0,a1);cx.lineWidth=w;cx.strokeStyle=col;cx.shadowBlur=blur||0;cx.shadowColor=col;cx.stroke();cx.shadowBlur=0}
+function frame(t){requestAnimationFrame(frame);t/=1000;
+  let target=0;if(S.state==='speaking'&&analyser&&curAudio){analyser.getByteFrequencyData(fd);target=fd.slice(2,40).reduce((a,b)=>a+b,0)/38/255*1.6}else if(S.state==='speaking')target=.35+.3*Math.sin(t*14)*Math.sin(t*5.3);else if(S.state==='listening')target=.25+.15*Math.sin(t*6);else if(S.state==='thinking')target=.2;
+  lv+=(target-lv)*.25;cx.clearRect(0,0,W,H);cx.save();cx.translate(W/2,H/2);const R=Math.min(W,H)*.36,C='#3df2ff',C2='rgba(61,242,255,';
+  const spd=S.state==='thinking'?3:S.state==='idle'?.4:1.2;
+  // glow core
+  const g=cx.createRadialGradient(0,0,0,0,0,R*.55*(1+lv*.4));g.addColorStop(0,'rgba(220,255,255,.95)');g.addColorStop(.25,C2+(.55+lv*.3)+')');g.addColorStop(1,C2+'0)');cx.fillStyle=g;cx.beginPath();cx.arc(0,0,R*.6*(1+lv*.4),0,7);cx.fill();
+  // spectrum ring
+  for(let i=0;i<96;i++){const a=i/96*Math.PI*2+t*.2,v=S.state==='speaking'&&curAudio?fd[(i%48)+2]/255:lv*(.5+.5*Math.sin(i*.7+t*8)),r1=R*.62,r2=r1+4+v*R*.28;cx.strokeStyle=C2+(.35+v*.6)+')';cx.lineWidth=2;cx.beginPath();cx.moveTo(Math.cos(a)*r1,Math.sin(a)*r1);cx.lineTo(Math.cos(a)*r2,Math.sin(a)*r2);cx.stroke()}
+  // rotating segmented rings
+  cx.save();cx.rotate(t*.6*spd);for(let i=0;i<3;i++)arc(R*.95,i*2.094,i*2.094+1.6,3,C,12);cx.restore();
+  cx.save();cx.rotate(-t*.35*spd);for(let i=0;i<12;i++)arc(R*1.05,i*.5236,i*.5236+.35,8,C2+'.55)');cx.restore();
+  cx.save();cx.rotate(t*.15*spd);arc(R*1.18,0,Math.PI*2,1,C2+'.3)');for(let i=0;i<60;i++){const a=i/60*Math.PI*2,l=i%5?4:10;cx.strokeStyle=C2+'.5)';cx.lineWidth=1;cx.beginPath();cx.moveTo(Math.cos(a)*R*1.18,Math.sin(a)*R*1.18);cx.lineTo(Math.cos(a)*(R*1.18+l),Math.sin(a)*(R*1.18+l));cx.stroke()}cx.restore();
+  cx.save();cx.rotate(-t*1.1*spd);arc(R*1.3,0,1.1,2,C,10);arc(R*1.3,Math.PI,Math.PI+1.1,2,C,10);cx.restore();
+  if(S.state==='thinking'){cx.save();cx.rotate(t*4);arc(R*.75,0,1.4,3,'#ffb13d',14);cx.restore()}
+  // inner triangle (Mk VI reactor)
+  cx.save();cx.rotate(-t*.25);cx.strokeStyle=C2+'.8)';cx.lineWidth=2;cx.beginPath();for(let i=0;i<3;i++){const a=i*2.094-Math.PI/2;cx[i?'lineTo':'moveTo'](Math.cos(a)*R*.38,Math.sin(a)*R*.38)}cx.closePath();cx.stroke();cx.restore();
+  cx.restore()}
+requestAnimationFrame(frame);
+</script>
+</body>
+</html>
